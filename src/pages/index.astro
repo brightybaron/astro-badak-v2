@@ -20,6 +20,8 @@ const data = await getContent();
 
 // Log data for debugging (optional)
 // console.log(data);
+
+const imgHero = "/src/assets/hero1.png";
 ---
 
 <MainLayout title="Home">
@@ -27,7 +29,7 @@ const data = await getContent();
     <div class="absolute z-[5] h-screen w-full">
       <div class="relative h-full w-full">
         <img
-          src="src/assets/hero1.png"
+          src={imgHero}
           alt="hero image"
           class="z-[2] w-full h-full object-cover object-center"
         />
