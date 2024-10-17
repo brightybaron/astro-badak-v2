@@ -1,0 +1,120 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+import { IoAdd, IoTrash, IoPencil } from "react-icons/io5";
+import { formatDate } from "@lib/utils";
+
+const datas = await fetch("http://localhost:4321/api/get-post").then((res) => {
+  // if (!res.ok) {
+  // throw new Error("No post to fetch");
+  // }
+  return res.json();
+});
+---
+
+<MainLayout title="Dashboard">
+  <section class="container">
+    <h1 class="text-3xl font-semibold text-center">Dashboard</h1>
+    <div class="max-w-screen-lg mx-auto">
+      <div class="flex items-end justify-between">
+        <h2 class="text-2xl font-semibold">List of Contents</h2>
+        <a
+          href="/dashboard/create"
+          class="py-1 px-2 inline-flex items-center gap-1 rounded-md bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <IoAdd size={15} />
+          New
+        </a>
+      </div>
+
+      <div class="max-w-screen-xl mx-auto mt-5">
+        <div class="w-full flex items-center justify-between gap-1 mb-5"></div>
+        <!-- <ContentTable content={content} /> -->
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-sm text-gray-700 uppercase bg-gray-50">
+            <tr class="text-center">
+              <th class="py-3 px-6">#</th>
+              <th>Title</th>
+              <th class="sm:table-cell hidden">Jenis Trip</th>
+              <th class="sm:table-cell hidden">Created</th>
+              <th class="sm:table-cell hidden">Updated</th>
+              <th>Visibility</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              datas.map((data: any, index: number) => (
+                <tr class="bg-white border-b text-center">
+                  <td class="text-center">{index + 1}</td>
+                  <td>{data.title}</td>
+                  <td class="sm:table-cell hidden">{data.jenistrip}</td>
+                  <td class="sm:table-cell hidden">
+                    {formatDate(data.createdAt.toString())}
+                  </td>
+                  <td class="sm:table-cell hidden">
+                    {formatDate(data.updatedAt.toString())}
+                  </td>
+                  <td>
+                    <label class="flex flex-col gap-y-1 justify-center items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        id="toggle-show"
+                        checked
+                        class="sr-only peer"
+                      />
+                      <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
+                      <span
+                        id="toggle-label"
+                        class="text-sm font-medium text-gray-900 dark:text-gray-300"
+                      >
+                        {" "}
+                        Hide
+                      </span>
+                    </label>
+                  </td>
+                  <td class="flex flex-wrap items-center justify-center gap-1">
+                    {/* <EditButton slug={data.slug} /> */}
+                    <a
+                      href={`/dashboard/edit/${data.slug}`}
+                      class="rounded-sm border p-1 hover:bg-gray-100"
+                    >
+                      <IoPencil size={20} />
+                    </a>
+                    {/* <DeleteButton slug={data.slug} /> */}
+                    <button
+                      type="submit"
+                      class="rounded-sm border p-1 hover:bg-gray-100"
+                    >
+                      <IoTrash size={20} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+<script>
+  // Get the checkbox and text elements
+  const checkboxes = document.querySelectorAll("#toggle-show");
+  const toggleTexts = document.querySelectorAll("#toggle-label");
+
+  // Add a change event listener to handle checkbox toggling
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", function (event) {
+      if ((event.target as HTMLInputElement).checked) {
+        // Since toggleTexts is also a collection, you need to get the corresponding element
+        const toggleText =
+          toggleTexts[Array.prototype.indexOf.call(checkboxes, checkbox)];
+        toggleText.textContent = "Shown"; // Change text to "Show"
+      } else {
+        const toggleText =
+          toggleTexts[Array.prototype.indexOf.call(checkboxes, checkbox)];
+        toggleText.textContent = "Hidden"; // Change text to "Hide"
+      }
+    });
+  });
+</script>

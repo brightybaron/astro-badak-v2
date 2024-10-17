@@ -1,0 +1,339 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+import { BsCalendar3, BsClock, BsMenuButtonWide } from "react-icons/bs";
+import NavTab from "@components/NavtabNav.tsx";
+import Accordion from "@components/Accordion.tsx";
+import LightboxGaleri from "@components/LightboxGaleri.tsx";
+import { IoPeople, IoPerson } from "react-icons/io5";
+import { getContent, getContentBySlug } from "@lib/data";
+
+export async function getStaticPaths() {
+  // const datas = await fetch("http://localhost:4321/api/get-post").then((res) =>
+  //   res.json()
+  // );
+
+  const datas = await getContent();
+
+  return datas.map((data: any) => ({
+    params: { slug: data.slug },
+    props: { data },
+  }));
+}
+
+const { slug } = Astro.params;
+
+// const data = await fetch("http://localhost:4321/api/get-post").then((res) =>
+//   res.json()
+// );
+
+const data = await getContentBySlug(slug);
+
+// const content = data.find((content: any) => content.slug === slug);
+
+const content: any = data;
+if (!content) {
+  throw new Error("Content not found");
+}
+
+const bucket = import.meta.env.SUPABASE_BUCKET;
+
+const tabs = [
+  { name: "highlight" },
+  { name: "destinasi" },
+  { name: "fasilitas" },
+  { name: "harga" },
+  { name: "itinerary" },
+  { name: "galeri" },
+];
+
+const accordionItems = content.itineraries.map(
+  (itinerary: any, index: number) => ({
+    title: `Day ${index + 1}`,
+    content: itinerary, // Each itinerary array is passed as content
+  })
+);
+
+export const prerender = false;
+---
+
+<MainLayout title={content.title}>
+  <section class="h-screen bg-cover bg-no-repeat bg-center relative">
+    <div class="absolute z-[5] h-screen w-full">
+      <div class="relative h-full w-full">
+        <!-- Desktop Hero -->
+        <img
+          src={`${bucket}/${content.images[0].url}`}
+          alt={`${content.title} hero image`}
+          class="z-[2] w-full h-full object-cover object-center hidden sm:block"
+        />
+        <!-- Mobile Hero -->
+        <img
+          src={`${bucket}/${content.images[0].url}`}
+          alt={`${content.title} hero image`}
+          class="z-[2] w-full h-full object-cover object-center block sm:hidden"
+        />
+        <div
+          class="absolute inset-0 z-[3] bg-gradient-to-b"
+          style="background: linear-gradient(180deg, rgba(1, 1, 1, 0.5) 0%, rgba(0, 0, 0, 0.4) 25%, rgba(255, 255, 255, 0) 100%);"
+        >
+        </div>
+      </div>
+    </div>
+    <div class="relative z-10 left-[10%] top-[30%] w-fit text-stone-200">
+      <p class="font-bold text-2xl mb-2">
+        <span class="typed" data-typed-items={content.title}></span>
+      </p>
+      <p class="font-semibold text-lg mb-3">by Badak Gunung</p>
+    </div>
+  </section>
+
+  <section class="container">
+    <p class="text-3xl my-4 font-bold">{content.title}</p>
+    <div class="grid grid-cols-3 gap-x-2 w-[320px]">
+      <div
+        class="flex justify-center gap-1 shadow-lg rounded py-2 border border-sand-brown-dark"
+      >
+        <div class="flex sm:flex-col flex-row items-center gap-1">
+          <BsClock size="1.2rem" />
+          <p class="text-sm">
+            {content.itineraries.length} day(s)
+          </p>
+        </div>
+      </div>
+      <div
+        class="flex justify-center gap-1 shadow-lg rounded py-2 border border-sand-brown-dark"
+      >
+        <div class="flex sm:flex-col flex-row items-center gap-1">
+          <BsCalendar3 size="1.2rem" />
+          <p class="text-sm">Everyday</p>
+        </div>
+      </div>
+      <div
+        class="flex justify-center gap-1 shadow-lg rounded py-2 border border-sand-brown-dark"
+      >
+        <div class="flex sm:flex-col flex-row items-center gap-1">
+          <!-- <BsMenuButtonWide size="1.2rem" /> -->
+          {
+            content.jenistrip.includes("Private") ? (
+              <IoPerson size="1.2rem" />
+            ) : (
+              <IoPeople size="1.2rem" />
+            )
+          }
+          <p class="text-sm">{content.jenistrip}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container flex flex-wrap justify-around mt-8 gap-x-4 gap-y-4">
+    <div class="grow shrink basis-auto lg:w-8/12 w-full">
+      <!-- Nav -->
+      <div class="grid lg:grid-cols-6 grid-cols-3 gap-3" id="nav-tab">
+        <NavTab client:load tabs={tabs} />
+      </div>
+      <!-- Tabs -->
+      <div class="mt-4 border-t border-black py-4 min-h-[250px]">
+        <!-- Tab panes -->
+        <!-- Highlight -->
+        <div id="highlight" class="tab-pane active">
+          <div class="grid sm:grid-cols-4 grid-cols-2">
+            <div class="col-span-1 font-semibold w-full">
+              <p>Meeting Point</p>
+              <p>Waktu Mulai</p>
+              <p>Waktu Selesai</p>
+            </div>
+
+            <div class="sm:col-span-3 col-span-1 w-full">
+              <p>: {content.mepo}</p>
+              <p>
+                : {content.itineraries.length > 1 ? "Hari 1, " : ""}{
+                  accordionItems[0].content[0].time
+                } WIB
+              </p>
+              <p>
+                : {
+                  content.itineraries.length > 1
+                    ? `Hari ${content.itineraries.length}, `
+                    : ""
+                }
+                {
+                  content.itineraries[content.itineraries.length - 1][
+                    content.itineraries[content.itineraries.length - 1].length -
+                      1
+                  ].time
+                } WIB
+              </p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <!-- Deskripsi -->
+            {
+              content.descriptions.map((desc: any, index: number) => (
+                <p
+                  class:list={[
+                    "my-2",
+                    index === 0 && "font-medium",
+                    desc.description.includes("Note") && "italic font-semibold",
+                  ]}
+                >
+                  {desc.description}
+                </p>
+              ))
+            }
+            <!-- text note imbauan -->
+          </div>
+        </div>
+
+        <!-- Destinasi -->
+        <div id="destinasi" class="tab-pane">
+          <ul>
+            {
+              content.destinasi.map((item: string) => (
+                <li class="list-disc list-inside">{item}</li>
+              ))
+            }
+          </ul>
+        </div>
+        <div id="fasilitas" class="tab-pane">
+          <div class="grid sm:grid-cols-2 grid-cols-1 gap-2">
+            <div>
+              <p class="font-semibold text-xl mb-2 underline">Included</p>
+              <ul>
+                {
+                  content.include.map((item: string) => (
+                    <li class="list-disc list-inside">{item}</li>
+                  ))
+                }
+              </ul>
+            </div>
+            <div>
+              <p class="font-semibold text-xl mb-2 underline">Excluded</p>
+              <ul>
+                {
+                  content.exclude.map((item: string) => (
+                    <li class="list-disc list-inside">{item}</li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Harga -->
+        <div id="harga" class="tab-pane">
+          <table class="table-auto w-full text-center border border-gray-300">
+            <thead>
+              <tr>
+                <th scope="col" class="border border-gray-300 bg-gray-200">
+                  Peserta
+                </th>
+                <th scope="col" class="border border-gray-300 bg-gray-200">
+                  Harga
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                content.prices
+                  .slice() // Make a shallow copy of the array to avoid mutating the original
+                  .sort((a: any, b: any) => a - b) // Sort prices in ascending order
+                  .map((item: any, index: number) => {
+                    const pax = content.prices.length + 1 - index; // Decrement pax starting from 6
+                    return (
+                      <tr>
+                        <td class="border border-gray-300">{pax} pax</td>
+                        <td class="border border-gray-300">{`${item}.000`}</td>
+                      </tr>
+                    );
+                  })
+              }
+            </tbody>
+          </table>
+          <div class="mt-4 text-end text-sm italic">
+            <p>*Harga dalam rupiah</p>
+            <p>*Lebih dari 6 orang, silakan hubungi kami</p>
+          </div>
+        </div>
+
+        <!-- Itinerary -->
+        <div id="itinerary" class="tab-pane">
+          <Accordion client:load items={accordionItems} />
+          <p class="text-sm text-end italic mt-4">
+            *Hanya sebagai acuan dasar, dalam pelaksanaanya menyesuaikan dengan
+            kondisi yang ada.
+          </p>
+        </div>
+
+        <!-- Galeri -->
+        <div id="galeri" class="tab-pane">
+          <div class="grid sm:grid-cols-4 grid-cols-2 gap-4">
+            <LightboxGaleri client:load images={content.images} />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grow shrink basis-auto">
+      <div
+        class="h-auto bg-white py-4 border-y-2 border-black rounded text-center"
+      >
+        <span>
+          <i class="bi bi-tag">
+            Mulai dari:&nbsp;
+            <span class="font-semibold">Rp. {content.prices[0]}.000</span>
+          </i>
+        </span>
+      </div>
+      <a
+        class="inline-block text-center w-full mt-2 p-2 bg-teal-900 hover:bg-teal-700 text-white rounded-full font-semibold"
+        href={`https://wa.me/6285157276433/?text=Hi%20Badak%20Gunung!%20Saya%20mau%20tanya%20tentang%20${content.title || ""}`}
+        target="_blank"
+      >
+        <i class="bi bi-whatsapp"></i> Chat
+      </a>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .tab-pane {
+    display: none;
+  }
+
+  .tab-pane.active {
+    display: block;
+  }
+</style>
+
+<script>
+  function onTabClick(event: any) {
+    let activeTabs = document.querySelectorAll(".active");
+    activeTabs.forEach(function (tab) {
+      tab.className = tab.className.replace("active", "");
+    });
+    event.target.parentElement.className += " active";
+    let element = document.getElementById(event.target.id.split("-")[0]);
+    if (element) {
+      element.className += " active";
+    }
+  }
+
+  const element: any = document.getElementById("nav-tab");
+  element.addEventListener("click", onTabClick, false);
+</script>
+<script>
+  import Typed from "typed.js";
+  const typed = document.querySelector(".typed");
+  if (typed) {
+    let typedStrings: string | any =
+      typed.getAttribute("data-typed-items") || [];
+    // typedStrings = typedStrings.split(",");
+    new Typed(".typed", {
+      strings: typedStrings.split("dan"),
+      loop: true,
+      typeSpeed: 50,
+      backSpeed: 50,
+      backDelay: 1500,
+    });
+  }
+</script>

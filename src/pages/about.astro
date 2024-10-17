@@ -1,0 +1,69 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+import { BsGeoAltFill, BsTelephone, BsEnvelope } from "react-icons/bs";
+---
+
+<MainLayout title="About">
+  <section class="container">
+    <div class="grid sm:grid-cols-3 grid-cols-1 justify-center">
+      <div class="col-span-1">
+        <img
+          src="/logo.png"
+          alt="logo"
+          class="w-fit h-auto sm:mb-0 mb-4 sm:ms-auto mx-auto sm:p-0 p-4"
+        />
+      </div>
+      <div class="col-span-2">
+        <p class="text-3xl font-semibold mb-2">About Us</p>
+        <p>
+          Berdiri sejak awal September 2018, Badak Gunung Adventure bergerak
+          dalam bidang pariwisata yang beroperasi di Malang. Biro wisata ini
+          dibentuk oleh beberapa nama yang berdedikasi dengan profesional tinggi
+          dalam bidang pariwisata dan pengetahuan terhadap setiap destinasi yang
+          menjadi wilayah layanan wisata di Badak Gunung Adventure.
+        </p>
+      </div>
+    </div>
+    <div class="grid sm:grid-cols-3 grid-cols-1 mt-12">
+      <div class="col-span-1">
+        <p class="text-2xl underline font-medium mb-2">Our Office</p>
+        <p class="text-xl">Pongangan, Manyar, Gresik</p>
+        <table
+          class="table-fixed border-separate border-spacing-x-2 border-spacing-y-1 border-gray-300 mt-4"
+        >
+          <tbody>
+            <tr>
+              <td>
+                <BsGeoAltFill />
+              </td>
+              <td>Pongangan, Manyar, Gresik</td>
+            </tr>
+            <tr>
+              <td>
+                <BsTelephone />
+              </td>
+              <td>0851 5727 6433</td>
+            </tr>
+            <tr>
+              <td>
+                <BsEnvelope />
+              </td>
+              <td>rekayodolan@gmail.com</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-span-2">
+        <iframe
+          title="Google Maps"
+          src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2027928.7027891946!2d113.58324044999999!3d-6.914709!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zN8KwMDgnMzIuMSJTIDExMsKwMzYnMzIuMSJF!5e0!3m2!1sen!2sid!4v1719382966884!5m2!1sen!2sid"
+          width="100%"
+          height="300"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrer-policy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+</MainLayout>

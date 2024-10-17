@@ -1,0 +1,85 @@
+---
+import Navbar from "@components/Navbar";
+import {
+  IoLocationOutline,
+  IoLogoInstagram,
+  IoLogoWhatsapp,
+} from "react-icons/io5";
+
+const { title } = Astro.props;
+export interface Props {
+  title: string;
+}
+
+const { pathname } = Astro.url;
+const needBg =
+  (pathname !== "/" && pathname === "/paket") ||
+  pathname === "/about" ||
+  pathname === "/faq" ||
+  pathname === "/create" ||
+  pathname.includes("/dashboard");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/logo.png" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title} | Badak Gunung</title>
+  </head>
+  <body>
+    <Navbar
+      client:only="react"
+      needBg={needBg ? "bg-teal-900" : ""}
+      paddingTop={!needBg ? "pt-6" : "pt-0"}
+    />
+    <div
+      class:list={[
+        "mt-0",
+        {
+          "mt-24": needBg,
+        },
+      ]}
+    >
+    </div>
+
+    <!-- KOnten -->
+    <slot />
+
+    <footer class="container py-4 mt-8">
+      <div class="flex flex-wrap mx-0.5 gap-x-6 justify-between">
+        <div class="grow shrink-0 basis-0 h-fit w-fit max-w-full py-1">
+          <p
+            class="font-semibold mb-3 text-lg underline decoration-solid decoration-1 decoration-slate-400"
+          >
+            Hubungi kami
+          </p>
+          <div class="mb-2 flex items-center">
+            <IoLogoWhatsapp />
+            <a
+              href="https://wa.me/6285157276433/?text=Hi%20Badak%20Gunung!"
+              target="_blank"
+            >
+              &nbsp;+62 852 2682 2944
+            </a>
+          </div>
+          <div class="mb-2 flex items-center">
+            <IoLogoInstagram />
+            <a href="https://www.instagram.com/badakgunung/" target="_blank">
+              &nbsp;Badak Gunung
+            </a>
+          </div>
+          <div class="mb-2 flex items-center">
+            <IoLocationOutline />
+            <a href="https://maps.app.goo.gl/h6NeC4vT4FPUoQKe8" target="_blank">
+              &nbsp;Pongangan, Manyar, Gresik, Jawa Timur
+            </a>
+          </div>
+        </div>
+      </div>
+      <p class="text-xl mt-4 mb-2">&copy; 2024 - Badak Gunung</p>
+    </footer>
+  </body>
+</html>
