@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import tailwind from "@astrojs/tailwind";
+import vercel from "@astrojs/vercel/serverless";
 
 // const SERVER_PORT = 4321;
 // // the url to access your blog during local development
@@ -21,7 +22,16 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   integrations: [react(), tailwind()],
   output: "server",
-  site: "https://brightybaron.github.io/astro-badak-v2",
+  adapter: vercel(),
+  image: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "uurxfghtwswayoinpncp.supabase.co",
+      },
+    ],
+  },
+  // site: "https://brightybaron.github.io/astro-badak-v2",
   // server: { port: SERVER_PORT },
   // base: BASE_URL,
 });
