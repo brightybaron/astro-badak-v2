@@ -1,0 +1,20 @@
+---
+import FormEdit from "@components/FormEdit";
+import MainLayout from "@layouts/MainLayout.astro";
+import { getContent, getContentBySlug } from "@lib/data";
+
+export async function getStaticPaths({ params }: { params: { slug: string } }) {
+  const slug = params.slug;
+  await getContentBySlug(slug);
+}
+
+const { slug } = Astro.params;
+const data = await getContentBySlug(slug);
+const bucket = import.meta.env.SUPABASE_BUCKET;
+export const prerender = false;
+// console.log(data);
+---
+
+<MainLayout title="Edit">
+  <FormEdit client:load content={data} bucket={bucket} />
+</MainLayout>

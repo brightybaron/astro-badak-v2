@@ -8,10 +8,6 @@ import { IoPeople, IoPerson } from "react-icons/io5";
 import { getContent, getContentBySlug } from "@lib/data";
 
 export async function getStaticPaths() {
-  // const datas = await fetch("http://localhost:4321/api/get-post").then((res) =>
-  //   res.json()
-  // );
-
   const datas = await getContent();
 
   return datas.map((data: any) => ({
@@ -21,10 +17,6 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-
-// const data = await fetch("http://localhost:4321/api/get-post").then((res) =>
-//   res.json()
-// );
 
 const data = await getContentBySlug(slug);
 

@@ -1,37 +1,8 @@
+import { getContentBySlug } from "@lib/data";
 import { prisma } from "@lib/prisma";
-import { supabase } from "@lib/supabase"; // Import your Supabase instance
-import { z } from "zod";
+import { supabase } from "@lib/supabase";
 
-// const UploadSchema = z
-//   .object({
-//     title: z.string().min(1, "Title is required"),
-//     jenistrip: z.string().min(1, "Jenis Trip is required"),
-//     mepo: z.string().min(1, "Mepo is required"),
-//     destinasi: z
-//       .array(z.string().min(1, "Destinasi is required"))
-//       .min(1, "Destinasi is required"),
-//     include: z
-//       .array(z.string().min(1, "Include is required"))
-//       .min(1, "Include is required"),
-//     exclude: z
-//       .array(z.string().min(1, "Exclude is required"))
-//       .min(1, "Exclude is required"),
-//     prices: z
-//       .array(z.string().min(1, "Prices is required"))
-//       .min(1, "Prices is required"),
-//     description: z
-//       .array(z.string().min(1, "Description is required"))
-//       .min(1, "Description is required"),
-//     itinerary: z
-//       .array(z.string().min(1, "Itinerary is required"))
-//       .min(1, "Itinerary is required"),
-//     photos: z
-//       .array(z.string().min(1, "Photos is required"))
-//       .min(1, "Photos is required"),
-//   })
-//   .required();
-
-export async function POST({ request }) {
+export async function POST({ request, params }) {
   try {
     const formData = await request.formData();
     const title = formData.get("title");
@@ -87,8 +58,8 @@ export async function POST({ request }) {
       })
     );
 
-    // Create post in Prisma
-    const newPost = await prisma.post.create({
+    // Update post based on the slug
+    const updatedPost = await prisma.post.update({
       data: {
         title,
         slug: title
@@ -105,17 +76,24 @@ export async function POST({ request }) {
         descriptions,
         itineraries,
         images: {
-          create: uploadedImages,
+          create: uploadedImages, // Add the new images
         },
+      },
+      where: {
+        slug: title
+          .toLowerCase()
+          .replace(/[^a-z0-9\s]/g, "")
+          .trim()
+          .replace(/\s+/g, "-"),
       },
     });
 
-    return new Response(JSON.stringify(newPost), { status: 201 });
+    return new Response(JSON.stringify(updatedPost), { status: 200 });
   } catch (error) {
-    console.error("Error creating post:", error);
+    console.error("Error updating post:", error);
     return new Response(
       JSON.stringify({
-        message: "Failed to create post",
+        message: "Failed to update post",
         error: error.message,
       }),
       { status: 500 }
