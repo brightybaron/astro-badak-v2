@@ -8,31 +8,28 @@ import {
 } from "react-icons/bs";
 import Card from "@components/Card.astro";
 import { getContent } from "@lib/data";
-
-// const data = await fetch("http://localhost:4321/api/get-post").then((res) => {
-//   // if (!res.ok) {
-//   // throw new Error("No post to fetch");
-//   // }
-//   return res.json();
-// });
+import DynamicImage from "@components/DynamicImage.astro";
 
 const data = await getContent();
 
-// Log data for debugging (optional)
-// console.log(data);\
-import DynamicImage from "@components/DynamicImage.astro";
+const seo = {
+  title: "Home",
+  description: "Badak Gunung - Explore our amazing trips",
+  openGraph: {
+    images: [
+      {
+        url: "https://badak-gunung.vercel.app/api/og?title=Home",
+      },
+    ],
+  },
+};
 ---
 
-<MainLayout title="Home">
+<MainLayout {...seo}>
   <section class="h-screen bg-cover bg-no-repeat bg-center relative">
     <div class="absolute z-[5] h-screen w-full">
       <div class="relative h-full w-full">
         <DynamicImage imagePath="/src/assets/hero1.png" altText="hero image" />
-        <!-- <img
-          src={imgHero}
-          alt="hero image"
-          class="z-[2] w-full h-full object-cover object-center"
-        /> -->
         <div
           class="absolute inset-0 z-[3] bg-gradient-to-b"
           style="background: linear-gradient(180deg, rgba(1, 1, 1, 0.5) 0%, rgba(0, 0, 0, 0.4) 25%, rgba(255, 255, 255, 0) 100%);"

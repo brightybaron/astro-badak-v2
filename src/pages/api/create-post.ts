@@ -1,35 +1,5 @@
 import { prisma } from "@lib/prisma";
-import { supabase } from "@lib/supabase"; // Import your Supabase instance
-import { z } from "zod";
-
-// const UploadSchema = z
-//   .object({
-//     title: z.string().min(1, "Title is required"),
-//     jenistrip: z.string().min(1, "Jenis Trip is required"),
-//     mepo: z.string().min(1, "Mepo is required"),
-//     destinasi: z
-//       .array(z.string().min(1, "Destinasi is required"))
-//       .min(1, "Destinasi is required"),
-//     include: z
-//       .array(z.string().min(1, "Include is required"))
-//       .min(1, "Include is required"),
-//     exclude: z
-//       .array(z.string().min(1, "Exclude is required"))
-//       .min(1, "Exclude is required"),
-//     prices: z
-//       .array(z.string().min(1, "Prices is required"))
-//       .min(1, "Prices is required"),
-//     description: z
-//       .array(z.string().min(1, "Description is required"))
-//       .min(1, "Description is required"),
-//     itinerary: z
-//       .array(z.string().min(1, "Itinerary is required"))
-//       .min(1, "Itinerary is required"),
-//     photos: z
-//       .array(z.string().min(1, "Photos is required"))
-//       .min(1, "Photos is required"),
-//   })
-//   .required();
+import { supabase } from "@lib/supabase";
 
 export async function POST({ request }) {
   try {
@@ -55,8 +25,8 @@ export async function POST({ request }) {
       .filter((d) => d !== "");
     const itineraries = JSON.parse(formData.get("itinerary") as string);
     const descriptions = JSON.parse(formData.get("description") as string);
-    const photos = formData.getAll("photos");
 
+    const photos = formData.getAll("photos");
     if (!Array.isArray(photos) || photos.length === 0) {
       return new Response(JSON.stringify({ message: "No images provided" }), {
         status: 400,

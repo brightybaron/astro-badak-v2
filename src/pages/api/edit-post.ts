@@ -2,71 +2,108 @@ import { getContentBySlug } from "@lib/data";
 import { prisma } from "@lib/prisma";
 import { supabase } from "@lib/supabase";
 
-export async function POST({ request, params }) {
-  try {
-    const formData = await request.formData();
-    const title = formData.get("title");
-    const jenistrip = formData.get("jenistrip");
-    const mepo = formData.get("mepo");
-    const destinasi = (formData.get("destinasi") as string)
-      .split(",")
-      .map((d) => d.trim())
-      .filter((d) => d !== "");
-    const include = (formData.get("include") as string)
-      .split(",")
-      .map((d) => d.trim())
-      .filter((d) => d !== "");
-    const exclude = (formData.get("exclude") as string)
-      .split(",")
-      .map((d) => d.trim())
-      .filter((d) => d !== "");
-    const prices = (formData.get("prices") as string)
-      .split(",")
-      .map((d) => d.trim())
-      .filter((d) => d !== "");
-    const itineraries = JSON.parse(formData.get("itinerary") as string);
-    const descriptions = JSON.parse(formData.get("description") as string);
-    const photos = formData.getAll("photos");
+export async function PUT({ request }) {
+  const formData = await request.formData();
+  const title = formData.get("title");
+  const jenistrip = formData.get("jenistrip");
+  const mepo = formData.get("mepo");
+  const destinasi = formData
+    .get("destinasi")
+    .split(",")
+    .map((d) => d.trim())
+    .filter((d) => d !== "");
+  const include = formData
+    .get("include")
+    .split(",")
+    .map((d) => d.trim())
+    .filter((d) => d !== "");
+  const exclude = formData
+    .get("exclude")
+    .split(",")
+    .map((d) => d.trim())
+    .filter((d) => d !== "");
+  const prices = formData
+    .get("prices")
+    .split(",")
+    .map((d) => d.trim())
+    .filter((d) => d !== "");
+  const itineraries = JSON.parse(formData.get("itinerary"));
+  const descriptions = JSON.parse(formData.get("description"));
 
-    if (!Array.isArray(photos) || photos.length === 0) {
-      return new Response(JSON.stringify({ message: "No images provided" }), {
-        status: 400,
-      });
-    }
+  // Generate slug
+  const slugify = (text) =>
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+  const slug = slugify(title);
 
-    // Store images in Supabase (parallel upload)
-    const uploadedImages = await Promise.all(
-      photos.map(async (file) => {
+  const currentPost = await prisma.post.findUnique({
+    where: { slug },
+    include: { images: true },
+  });
+
+  if (!currentPost) {
+    return new Response(JSON.stringify({ message: "Post not found" }), {
+      status: 404,
+    });
+  }
+
+  // Check if the title has changed
+  const newSlug =
+    title !== currentPost.title ? slugify(title) : currentPost.slug;
+
+  // Handle image deletion
+  const imagesToDelete = formData.getAll("imagesToDelete");
+  const imagesToDeleteRecords = await prisma.image.findMany({
+    where: { url: { in: imagesToDelete } },
+  });
+
+  if (imagesToDeleteRecords.length > 0) {
+    await Promise.all(
+      imagesToDeleteRecords.map(async (image) => {
+        const { error: deleteError } = await supabase.storage
+          .from("uploads")
+          .remove([image.url]);
+
+        if (!deleteError) {
+          await prisma.image.delete({
+            where: { id: image.id },
+          });
+        }
+      })
+    );
+  }
+
+  const newPhotos = formData.getAll("photos");
+  let uploadedImages = [];
+  if (newPhotos.length > 0) {
+    uploadedImages = await Promise.all(
+      newPhotos.map(async (file) => {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("uploads")
-          .upload(
-            `${title
-              .toLowerCase()
-              .replace(/[^a-z0-9\s]/g, "")
-              .trim()
-              .replace(/\s+/g, "-")}/${file.name}`,
-            file,
-            { upsert: true, cacheControl: "3600" }
-          );
+          .upload(`${slug}/${file.name}`, file, {
+            upsert: true,
+            cacheControl: "3600",
+          });
 
         if (uploadError) {
-          console.error("Supabase upload error:", uploadError.message);
-          throw new Error("Failed to upload image to Supabase");
+          throw new Error("Failed to upload image");
         }
 
         return { url: uploadData?.path };
       })
     );
+  }
 
-    // Update post based on the slug
+  try {
+    // Update post
     const updatedPost = await prisma.post.update({
+      where: { slug: currentPost.slug },
       data: {
         title,
-        slug: title
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, "")
-          .trim()
-          .replace(/\s+/g, "-"),
+        slug: newSlug,
         jenistrip,
         mepo,
         destinasi,
@@ -76,15 +113,11 @@ export async function POST({ request, params }) {
         descriptions,
         itineraries,
         images: {
-          create: uploadedImages, // Add the new images
+          deleteMany: {
+            id: { in: imagesToDeleteRecords.map((img) => img.id) },
+          },
+          create: newPhotos.length > 0 ? uploadedImages : undefined,
         },
-      },
-      where: {
-        slug: title
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, "")
-          .trim()
-          .replace(/\s+/g, "-"),
       },
     });
 

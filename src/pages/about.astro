@@ -1,9 +1,21 @@
 ---
 import MainLayout from "@layouts/MainLayout.astro";
 import { BsGeoAltFill, BsTelephone, BsEnvelope } from "react-icons/bs";
+
+const seo = {
+  title: "About Us",
+  description: "Badak Gunung - Explore our amazing trips",
+  openGraph: {
+    images: [
+      {
+        url: "https://badak-gunung.vercel.app/api/og?title=About Us",
+      },
+    ],
+  },
+};
 ---
 
-<MainLayout title="About">
+<MainLayout {...seo}>
   <section class="container">
     <div class="grid sm:grid-cols-3 grid-cols-1 justify-center">
       <div class="col-span-1">

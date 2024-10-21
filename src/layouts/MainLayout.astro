@@ -6,9 +6,12 @@ import {
   IoLogoWhatsapp,
 } from "react-icons/io5";
 
-const { title } = Astro.props;
+const { title, description, keywords } = Astro.props;
+
 export interface Props {
-  title: string;
+  title?: string;
+  description?: string;
+  keywords?: string;
 }
 
 const { pathname } = Astro.url;
@@ -26,6 +29,16 @@ const needBg =
     <link rel="icon" href="/logo.png" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+
+    <meta
+      name="description"
+      content={description || "Badak Gunung - Explore our amazing trips"}
+    />
+    <meta
+      name="keywords"
+      content={keywords ||
+        "bromo, malang, gunung, outdoor, adventure, hiking, trips, indonesia"}
+    />
 
     <title>{title} | Badak Gunung</title>
   </head>

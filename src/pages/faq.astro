@@ -1,5 +1,17 @@
 ---
 import MainLayout from "@layouts/MainLayout.astro";
+
+const seo = {
+  title: "FAQ",
+  description: "Badak Gunung - Explore our amazing trips",
+  openGraph: {
+    images: [
+      {
+        url: "https://badak-gunung.vercel.app/api/og?title=FAQ",
+      },
+    ],
+  },
+};
 ---
 
-<MainLayout title="FAQ" />
+<MainLayout {...seo} />

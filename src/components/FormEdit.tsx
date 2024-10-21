@@ -18,6 +18,7 @@ const FormEdit: React.FC<FormEditProps> = ({
   const [removedImages, setRemovedImages] = useState<boolean[]>(
     Array(content.images.length).fill(false)
   );
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]); // New state for images to delete
 
   useEffect(() => {
     const extractedDescriptions = (
@@ -48,12 +49,14 @@ const FormEdit: React.FC<FormEditProps> = ({
     setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
-  const handleRemoveExistingImage = (index: number, url: string) => {
+  const handleRemoveExistingImage = (index: number) => {
     setRemovedImages((prev) => {
       const updated = [...prev];
       updated[index] = true; // Mark this image as removed
       return updated;
     });
+    // Add the image URL to the imagesToDelete state
+    setImagesToDelete((prev) => [...prev, content.images[index].url]);
   };
 
   const handleItineraryChange = (
@@ -63,7 +66,11 @@ const FormEdit: React.FC<FormEditProps> = ({
     value: string
   ) => {
     const updatedItineraries = [...itineraries];
-    updatedItineraries[dayIndex][index][field] = value;
+    // updatedItineraries[dayIndex][index][field] = value;
+    if (updatedItineraries[dayIndex] && updatedItineraries[dayIndex][index]) {
+      updatedItineraries[dayIndex][index][field] = value;
+    }
+
     setItineraries(updatedItineraries);
   };
 
@@ -75,7 +82,11 @@ const FormEdit: React.FC<FormEditProps> = ({
 
   const handleRemoveItinerary = (dayIndex: number, index: number) => {
     const updatedItineraries = [...itineraries];
-    updatedItineraries[dayIndex].splice(index, 1);
+    // updatedItineraries[dayIndex].splice(index, 1);
+    if (itineraries[dayIndex]) {
+      updatedItineraries.splice(dayIndex, 1);
+    }
+
     setItineraries(updatedItineraries);
   };
 
@@ -85,7 +96,11 @@ const FormEdit: React.FC<FormEditProps> = ({
 
   const handleRemoveDay = (dayIndex: number) => {
     const updatedItineraries = [...itineraries];
-    updatedItineraries.splice(dayIndex, 1);
+    // updatedItineraries.splice(dayIndex, 1);
+    if (itineraries[dayIndex]) {
+      updatedItineraries.splice(dayIndex, 1);
+    }
+
     setItineraries(updatedItineraries);
   };
 
@@ -121,13 +136,19 @@ const FormEdit: React.FC<FormEditProps> = ({
     formData.append("itinerary", JSON.stringify(mappedItineraries));
     formData.append("description", JSON.stringify(mappedDescriptions));
 
-    selectedImages.forEach((image, index) => {
-      formData.append(`photos[${index}]`, image);
+    imagesToDelete.forEach((imageUrl) => {
+      formData.append("imagesToDelete", imageUrl);
     });
+
+    if (selectedImages.length > 0) {
+      selectedImages.forEach((image, index) => {
+        formData.append(`photos[${index}]`, image);
+      });
+    }
 
     try {
       const response = await fetch("/api/edit-post", {
-        method: "POST",
+        method: "PUT",
         body: formData,
       });
 
@@ -290,7 +311,9 @@ const FormEdit: React.FC<FormEditProps> = ({
                 htmlFor="photos"
                 className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
               >
-                <span>Upload a file</span>
+                <span>
+                  {content.images.length > 0 ? "Add photos" : "Upload photos"}
+                </span>
                 <input
                   id="photos"
                   name="photos"
@@ -306,29 +329,26 @@ const FormEdit: React.FC<FormEditProps> = ({
             <p className="text-xs leading-5 text-gray-600">
               PNG, JPG, GIF up to 10MB
             </p>
-            <div id="selected-images" className="mt-2 grid grid-cols-3 gap-2">
+            <div className="mt-2 grid grid-cols-3 gap-2">
               {/* Display existing images */}
-              {content.images.map(
-                (image, index) =>
-                  !removedImages[index] && ( // Only display if not marked as removed
-                    <div key={index} className="relative m-2">
-                      <img
-                        src={`${bucket}/${image.url}`}
-                        alt={`image - ${index + 1}`}
-                        className="h-auto w-48 object-cover"
-                      />
-                      <button
-                        type="button"
-                        className="remove-image-btn absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
-                        onClick={() =>
-                          handleRemoveExistingImage(index, image.url)
-                        }
-                        aria-label="Remove Image"
-                      >
-                        X
-                      </button>
-                    </div>
-                  )
+              {content.images.map((image, index) =>
+                !removedImages[index] ? (
+                  <div key={index} className="relative m-2">
+                    <img
+                      src={`${bucket}/${image.url}`}
+                      alt={`image - ${index + 1}`}
+                      className="h-auto w-48 object-cover delete-image"
+                    />
+                    <button
+                      type="button"
+                      className="remove-image-btn absolute top-2 right-2 bg-red-600 text-white rounded-full p-1"
+                      onClick={() => handleRemoveExistingImage(index)}
+                      aria-label="Remove Image"
+                    >
+                      <IoTrash size={20} />
+                    </button>
+                  </div>
+                ) : null
               )}
 
               {/* New selected images */}
@@ -345,7 +365,7 @@ const FormEdit: React.FC<FormEditProps> = ({
                     onClick={() => handleRemoveImage(index)}
                     aria-label="Remove Image"
                   >
-                    X
+                    <IoTrash size={20} />
                   </button>
                 </div>
               ))}

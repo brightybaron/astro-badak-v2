@@ -41,15 +41,27 @@ const tabs = [
 const accordionItems = content.itineraries.map(
   (itinerary: any, index: number) => ({
     title: `Day ${index + 1}`,
-    content: itinerary, // Each itinerary array is passed as content
+    content: itinerary,
   })
 );
+
+const seo = {
+  title: content.title,
+  description: content.description,
+  openGraph: {
+    images: [
+      {
+        url: `${bucket}/${content.images[0].url}`,
+      },
+    ],
+  },
+};
 
 export const prerender = false;
 ---
 
-<MainLayout title={content.title}>
-  <section class="h-screen bg-cover bg-no-repeat bg-center relative">
+<MainLayout {...seo}>
+  <section class="h-dvh bg-cover bg-no-repeat bg-center relative">
     <div class="absolute z-[5] h-screen w-full">
       <div class="relative h-full w-full">
         <!-- Desktop Hero -->
@@ -104,7 +116,6 @@ export const prerender = false;
         class="flex justify-center gap-1 shadow-lg rounded py-2 border border-sand-brown-dark"
       >
         <div class="flex sm:flex-col flex-row items-center gap-1">
-          <!-- <BsMenuButtonWide size="1.2rem" /> -->
           {
             content.jenistrip.includes("Private") ? (
               <IoPerson size="1.2rem" />
@@ -165,15 +176,16 @@ export const prerender = false;
                 <p
                   class:list={[
                     "my-2",
-                    index === 0 && "font-medium",
-                    desc.description.includes("Note") && "italic font-semibold",
+                    desc.description.length > 1
+                      ? index === 0 && "font-medium"
+                      : "font-normal",
+                    desc.description.includes("Note") && "text-xs italic",
                   ]}
                 >
                   {desc.description}
                 </p>
               ))
             }
-            <!-- text note imbauan -->
           </div>
         </div>
 
