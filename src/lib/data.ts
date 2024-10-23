@@ -5,7 +5,7 @@ export const getContent = async () => {
   try {
     const result = await prisma.post.findMany({
       orderBy: {
-        updatedAt: "asc",
+        createdAt: "asc",
       },
       include: {
         images: true, // Include related images if you have a relation defined

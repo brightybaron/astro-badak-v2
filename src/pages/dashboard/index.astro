@@ -4,13 +4,6 @@ import { IoAdd, IoTrash, IoPencil } from "react-icons/io5";
 import { formatDate } from "@lib/utils";
 import { getContent } from "@lib/data";
 
-// const datas = await fetch("http://localhost:4321/api/get-post").then((res) => {
-//   // if (!res.ok) {
-//   // throw new Error("No post to fetch");
-//   // }
-//   return res.json();
-// });
-
 const datas = await getContent();
 ---
 
@@ -40,7 +33,7 @@ const datas = await getContent();
               <th class="sm:table-cell hidden">Jenis Trip</th>
               <th class="sm:table-cell hidden">Created</th>
               <th class="sm:table-cell hidden">Updated</th>
-              <th>Visibility</th>
+              <!-- <th>Visibility</th> -->
               <th class="text-center">Actions</th>
             </tr>
           </thead>
@@ -48,8 +41,8 @@ const datas = await getContent();
             {
               datas.map((data: any, index: number) => (
                 <tr class="bg-white border-b text-center">
-                  <td class="text-center">{index + 1}</td>
-                  <td>{data.title}</td>
+                  <td>{index + 1}</td>
+                  <td class="text-start">{data.title}</td>
                   <td class="sm:table-cell hidden">{data.jenistrip}</td>
                   <td class="sm:table-cell hidden">
                     {formatDate(data.createdAt.toString())}
@@ -57,7 +50,7 @@ const datas = await getContent();
                   <td class="sm:table-cell hidden">
                     {formatDate(data.updatedAt.toString())}
                   </td>
-                  <td>
+                  {/* <td>
                     <label class="flex flex-col gap-y-1 justify-center items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -74,19 +67,20 @@ const datas = await getContent();
                         Hide
                       </span>
                     </label>
-                  </td>
+                  </td> */}
                   <td class="flex flex-wrap items-center justify-center gap-1">
-                    {/* <EditButton slug={data.slug} /> */}
+                    {/* Edit Button */}
                     <a
                       href={`/dashboard/edit/${data.slug}`}
                       class="rounded-sm border p-1 hover:bg-gray-100"
                     >
                       <IoPencil size={20} />
                     </a>
-                    {/* <DeleteButton slug={data.slug} /> */}
+                    {/* Delete Button */}
                     <button
-                      type="submit"
-                      class="rounded-sm border p-1 hover:bg-gray-100"
+                      type="button"
+                      class="delete-btn rounded-sm border p-1 hover:bg-gray-100"
+                      data-id={data.id}
                     >
                       <IoTrash size={20} />
                     </button>
@@ -101,22 +95,60 @@ const datas = await getContent();
   </section>
 </MainLayout>
 <script>
-  // Get the checkbox and text elements
   const checkboxes = document.querySelectorAll("#toggle-show");
   const toggleTexts = document.querySelectorAll("#toggle-label");
 
-  // Add a change event listener to handle checkbox toggling
   checkboxes.forEach((checkbox) => {
     checkbox.addEventListener("change", function (event) {
       if ((event.target as HTMLInputElement).checked) {
-        // Since toggleTexts is also a collection, you need to get the corresponding element
         const toggleText =
           toggleTexts[Array.prototype.indexOf.call(checkboxes, checkbox)];
-        toggleText.textContent = "Shown"; // Change text to "Show"
+        toggleText.textContent = "Shown";
       } else {
         const toggleText =
           toggleTexts[Array.prototype.indexOf.call(checkboxes, checkbox)];
-        toggleText.textContent = "Hidden"; // Change text to "Hide"
+        toggleText.textContent = "Hidden";
+      }
+    });
+  });
+</script>
+
+<script>
+  const deleteButtons = document.querySelectorAll(".delete-btn");
+
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", async function () {
+      const id = this.getAttribute("data-id");
+
+      const confirmed = confirm("Are you sure you want to delete this post?");
+      if (confirmed) {
+        try {
+          const response = await fetch("/api/deletePost", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id }),
+          });
+
+          if (!response || !response.ok) {
+            const result = await response.json();
+            console.error("Error deleting post:", result.message);
+            alert("Error deleting post: " + result.message || "Unknown error.");
+
+            return;
+          } else {
+            const result = await response.json();
+            console.error(result.message);
+            alert("Error deleting post: " + result.message);
+          }
+
+          alert("Post deleted successfully!");
+          window.location.reload();
+        } catch (error) {
+          console.error("Error deleting post:", error);
+          alert("An error occurred. Please try again.");
+        }
       }
     });
   });

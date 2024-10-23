@@ -312,7 +312,9 @@ const FormEdit: React.FC<FormEditProps> = ({
                 className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
               >
                 <span>
-                  {content.images.length > 0 ? "Add photos" : "Upload photos"}
+                  {content.images.length > 0 || selectedImages.length > 0
+                    ? "Add photos"
+                    : "Upload photos"}
                 </span>
                 <input
                   id="photos"

@@ -1,6 +1,7 @@
 import { getContentBySlug } from "@lib/data";
 import { prisma } from "@lib/prisma";
 import { supabase } from "@lib/supabase";
+import { slugify } from "@lib/utils";
 
 export async function PUT({ request }) {
   const formData = await request.formData();
@@ -31,18 +32,10 @@ export async function PUT({ request }) {
   const descriptions = JSON.parse(formData.get("description"));
 
   // Generate slug
-  const slugify = (text) =>
-    text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
+
   const slug = slugify(title);
 
-  const currentPost = await prisma.post.findUnique({
-    where: { slug },
-    include: { images: true },
-  });
+  const currentPost = await getContentBySlug(slug);
 
   if (!currentPost) {
     return new Response(JSON.stringify({ message: "Post not found" }), {

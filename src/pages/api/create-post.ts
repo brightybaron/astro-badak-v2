@@ -1,5 +1,6 @@
 import { prisma } from "@lib/prisma";
 import { supabase } from "@lib/supabase";
+import { slugify } from "@lib/utils";
 
 export async function POST({ request }) {
   try {
@@ -33,20 +34,17 @@ export async function POST({ request }) {
       });
     }
 
+    const slug = slugify(title);
+
     // Store images in Supabase (parallel upload)
     const uploadedImages = await Promise.all(
       photos.map(async (file) => {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("uploads")
-          .upload(
-            `${title
-              .toLowerCase()
-              .replace(/[^a-z0-9\s]/g, "")
-              .trim()
-              .replace(/\s+/g, "-")}/${file.name}`,
-            file,
-            { upsert: true, cacheControl: "3600" }
-          );
+          .upload(`slugify(${slug})/${file.name}`, file, {
+            upsert: true,
+            cacheControl: "3600",
+          });
 
         if (uploadError) {
           console.error("Supabase upload error:", uploadError.message);
@@ -61,11 +59,7 @@ export async function POST({ request }) {
     const newPost = await prisma.post.create({
       data: {
         title,
-        slug: title
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, "")
-          .trim()
-          .replace(/\s+/g, "-"),
+        slug,
         jenistrip,
         mepo,
         destinasi,
