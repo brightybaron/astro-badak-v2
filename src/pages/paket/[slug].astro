@@ -23,6 +23,7 @@ const data = await getContentBySlug(slug);
 // const content = data.find((content: any) => content.slug === slug);
 
 const content: any = data;
+
 if (!content) {
   throw new Error("Content not found");
 }
@@ -72,8 +73,10 @@ export const prerender = false;
         />
         <!-- Mobile Hero -->
         <img
-          src={`${bucket}/${content.images[1].url}`}
-          alt={`${content.title} hero image`}
+          src={content.images.length > 1
+            ? `${bucket}/${content.images[1].url}`
+            : `${bucket}/${content.images[0].url}`}
+          alt=""
           class="z-[2] w-full h-full object-cover object-center block sm:hidden"
         />
         <div
