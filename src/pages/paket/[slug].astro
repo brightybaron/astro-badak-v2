@@ -2,7 +2,7 @@
 import MainLayout from "@layouts/MainLayout.astro";
 import { BsCalendar3, BsClock, BsMenuButtonWide } from "react-icons/bs";
 import NavTab from "@components/NavtabNav.tsx";
-import Accordion from "@components/Accordion.tsx";
+import { Accordion } from "@components/Accordion.tsx";
 import LightboxGaleri from "@components/LightboxGaleri.tsx";
 import { IoPeople, IoPerson } from "react-icons/io5";
 import { getContent, getContentBySlug } from "@lib/data";
@@ -72,7 +72,7 @@ export const prerender = false;
         />
         <!-- Mobile Hero -->
         <img
-          src={`${bucket}/${content.images[0].url}`}
+          src={`${bucket}/${content.images[1].url}`}
           alt={`${content.title} hero image`}
           class="z-[2] w-full h-full object-cover object-center block sm:hidden"
         />
