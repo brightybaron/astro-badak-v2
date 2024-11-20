@@ -173,6 +173,8 @@ const FormEdit: React.FC<FormEditProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
+      method="PUT"
+      encType="multipart/form-data"
       className="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md"
     >
       <h2 className="text-2xl font-bold mb-4">Edit Post</h2>

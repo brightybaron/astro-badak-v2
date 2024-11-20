@@ -70,10 +70,11 @@ export async function PUT({ request }) {
   }
 
   const newPhotos = formData.getAll("photos");
-  let uploadedImages = [];
-  if (newPhotos.length > 0) {
-    uploadedImages = await Promise.all(
-      newPhotos.map(async (file) => {
+
+  let uploadNewPhotos: { url: string }[] = [];
+  if (Array.isArray(newPhotos) && newPhotos.length !== 0) {
+    uploadNewPhotos = await Promise.all(
+      newPhotos.map(async (file: any) => {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("uploads")
           .upload(`${slug}/${file.name}`, file, {
@@ -82,6 +83,7 @@ export async function PUT({ request }) {
           });
 
         if (uploadError) {
+          console.error("Supabase upload error:", uploadError.message);
           throw new Error("Failed to upload image");
         }
 
@@ -109,7 +111,7 @@ export async function PUT({ request }) {
           deleteMany: {
             id: { in: imagesToDeleteRecords.map((img) => img.id) },
           },
-          create: newPhotos.length > 0 ? uploadedImages : undefined,
+          create: uploadNewPhotos,
         },
       },
     });

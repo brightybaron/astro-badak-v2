@@ -99,6 +99,12 @@ const CreatePostForm: React.FC = () => {
     formData.append("itinerary", JSON.stringify(mappedItineraries));
     formData.append("description", JSON.stringify(mappedDescriptions));
 
+    if (selectedImages.length > 0) {
+      selectedImages.forEach((image, index) => {
+        formData.append(`photos[${index}]`, image);
+      });
+    }
+
     try {
       const response = await fetch("/api/create-post", {
         method: "POST",
