@@ -1,6 +1,6 @@
 ---
 import MainLayout from "@layouts/MainLayout.astro";
-import { BsCalendar3, BsClock, BsMenuButtonWide } from "react-icons/bs";
+import { BsCalendar3, BsClock } from "react-icons/bs";
 import NavTab from "@components/NavtabNav.tsx";
 import { Accordion } from "@components/Accordion.tsx";
 import LightboxGaleri from "@components/LightboxGaleri.tsx";
@@ -19,8 +19,6 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 
 const data = await getContentBySlug(slug);
-
-// const content = data.find((content: any) => content.slug === slug);
 
 const content: any = data;
 
@@ -112,7 +110,9 @@ export const prerender = false;
       >
         <div class="flex sm:flex-col flex-row items-center gap-1">
           <BsCalendar3 size="1.2rem" />
-          <p class="text-sm">Everyday</p>
+          <p class="text-sm">
+            {content.jenistrip.includes("Private") ? "Everyday" : "Weekend"}
+          </p>
         </div>
       </div>
       <div
@@ -250,7 +250,9 @@ export const prerender = false;
                     return (
                       <tr>
                         <td class="border border-gray-300">{pax} pax</td>
-                        <td class="border border-gray-300">{`${item}.000`}</td>
+                        <td class="border border-gray-300">
+                          {`${item}.000`} / pax
+                        </td>
                       </tr>
                     );
                   })
