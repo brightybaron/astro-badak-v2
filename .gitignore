@@ -1,5 +1,9 @@
 # build output
 dist/
+
+# api
+src/pages/api/get-post.ts
+
 # generated types
 .astro/
 

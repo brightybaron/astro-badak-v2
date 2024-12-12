@@ -42,7 +42,7 @@ const datas = await getContent();
               datas.map((data: any, index: number) => (
                 <tr class="bg-white border-b text-center">
                   <td>{index + 1}</td>
-                  <td class="text-start">{data.title}</td>
+                  <td class="text-start"><a href={`/paket/${data.slug}`} class="hover:underline">{data.title}</a></td>
                   <td class="sm:table-cell hidden">{data.jenistrip}</td>
                   <td class="sm:table-cell hidden">
                     {formatDate(data.createdAt.toString())}

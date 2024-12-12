@@ -52,14 +52,18 @@ const seo = {
     <p class="text-3xl font-semibold text-center my-4">Why Badak Gunung?</p>
     <div class="grid sm:grid-cols-3 grid-cols-1 justify-center">
       <div class="p-4 flex flex-col items-center text-center">
-        <BsCashCoin size="3.75rem" />
+        <div class="hover:motion-safe:animate-bounce">
+          <BsCashCoin size="3.75rem" />
+        </div>
         <p class="font-bold mt-4 mb-2 text-2xl">Save Money</p>
         <p>
           Dapatkan paket liburan yang <em>affordable</em> dengan fasilitas yang beragam
         </p>
       </div>
       <div class="p-4 flex flex-col items-center text-center">
-        <BsFillLuggageFill size="3.75rem" />
+        <div class="hover:motion-safe:animate-pulse">
+          <BsFillLuggageFill size="3.75rem" />
+        </div>
         <p class="font-bold mt-4 mb-2 text-2xl">Stay Safe</p>
         <p>
           Kami pastikan setiap tamu yang berlibur dapat merasakan liburan yang
@@ -67,7 +71,9 @@ const seo = {
         </p>
       </div>
       <div class="p-4 flex flex-col items-center text-center">
-        <BsEmojiLaughing size="3.75rem" />
+        <div class="hover:motion-safe:animate-spin">
+          <BsEmojiLaughing size="3.75rem" />
+        </div>
         <p class="font-bold mt-4 mb-2 text-2xl">Get Help</p>
         <p>
           Liburanmu akan terasa lebih menyenangkan dengan ditemani kru yang
@@ -79,8 +85,8 @@ const seo = {
 
   <section class="container py-8">
     <p class="text-3xl font-semibold text-center my-4">Paket Kami</p>
-    <div class="flex flex-wrap justify-around gap-2">
-      <Card data={data.slice(0, 2)} />
+    <div class="flex flex-wrap lg:justify-around md:justify-between justify-start gap-2">
+      <Card data={data.slice(0, 3)} />
     </div>
     <button
       class="bg-teal-900 text-white rounded font-semibold mt-4 px-4 py-2 hover:bg-teal-700"

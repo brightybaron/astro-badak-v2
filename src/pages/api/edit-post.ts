@@ -72,7 +72,7 @@ export async function PUT({ request }) {
   const newPhotos = formData.getAll("photos");
 
   let uploadNewPhotos: { url: string }[] = [];
-  if (Array.isArray(newPhotos) && newPhotos.length !== 0) {
+  if (Array.isArray(newPhotos) && newPhotos.length > 0) {
     uploadNewPhotos = await Promise.all(
       newPhotos.map(async (file: any) => {
         const { data: uploadData, error: uploadError } = await supabase.storage
