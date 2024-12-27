@@ -8,9 +8,10 @@ type Image = {
 
 type LightboxProps = {
   images: Image[];
+  bucket: any;
 };
 
-const LightboxGaleri = ({ images }: LightboxProps) => {
+const LightboxGaleri = ({ images, bucket }: LightboxProps) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -40,9 +41,6 @@ const LightboxGaleri = ({ images }: LightboxProps) => {
     }
   };
 
-  const bucket =
-    "https://uurxfghtwswayoinpncp.supabase.co/storage/v1/object/public/uploads";
-
   return (
     <>
       {images.map((image, index) => (
@@ -69,7 +67,7 @@ const LightboxGaleri = ({ images }: LightboxProps) => {
           </div>
           <div className="absolute w-full h-screen">
             <button
-              className="bg-[#333333] text-white border-none py-2 px-4 cursor-pointer hover:bg-[#444444] active:bg-[#555555] absolute top-3 right-3 rounded-md"
+              className="bg-red-600 text-white border-none py-2 px-4 cursor-pointer hover:bg-red-400 active:bg-[#555555] absolute top-3 right-3 rounded-md font-semibold"
               onClick={closeLightbox}
             >
               Close
@@ -77,13 +75,13 @@ const LightboxGaleri = ({ images }: LightboxProps) => {
             {images.length > 1 && (
               <>
                 <button
-                  className="bg-[#333333] text-white border-none py-2 px-4 cursor-pointer hover:bg-[#444444] active:bg-[#555555] absolute top-[47%] sm:left-8 left-0 rounded-md"
+                  className="bg-transparent text-white border-none p-2 cursor-pointer hover:bg-[#444444] active:bg-[#555555] absolute top-[47%] sm:left-8 left-0 rounded-md"
                   onClick={gotoPrevious}
                 >
                   <BsChevronLeft size={"1.5rem"} />
                 </button>
                 <button
-                  className="bg-[#333333] text-white border-none py-2 px-4 cursor-pointer hover:bg-[#444444] active:bg-[#555555] absolute top-[47%] sm:right-8 right-0 rounded"
+                  className="bg-transparent text-white border-none p-2 cursor-pointer hover:bg-[#444444] active:bg-[#555555] absolute top-[47%] sm:right-8 right-0 rounded"
                   onClick={gotoNext}
                 >
                   <BsChevronRight size={"1.5rem"} />

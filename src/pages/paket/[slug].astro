@@ -278,7 +278,11 @@ export const prerender = false;
         <!-- Galeri -->
         <div id="galeri" class="tab-pane">
           <div class="grid sm:grid-cols-4 grid-cols-2 gap-4">
-            <LightboxGaleri client:load images={content.images} />
+            <LightboxGaleri
+              client:load
+              images={content.images}
+              bucket={bucket}
+            />
           </div>
         </div>
       </div>
