@@ -1,6 +1,6 @@
 ---
 import MainLayout from "@layouts/MainLayout.astro";
-import { BsCalendar3, BsClock } from "react-icons/bs";
+import { BsCalendar3, BsClock, BsWhatsapp } from "react-icons/bs";
 import NavTab from "@components/NavtabNav.tsx";
 import { Accordion } from "@components/Accordion.tsx";
 import LightboxGaleri from "@components/LightboxGaleri.tsx";
@@ -295,11 +295,11 @@ export const prerender = false;
         </span>
       </div>
       <a
-        class="inline-block text-center w-full mt-2 p-2 bg-teal-900 hover:bg-teal-700 text-white rounded-full font-semibold"
+        class="inline-flex items-center gap-x-2 justify-center w-full mt-2 p-2 bg-teal-900 hover:bg-teal-700 text-white rounded-full font-semibold"
         href={`https://wa.me/6285157276433/?text=Hi%20Badak%20Gunung!%20Saya%20mau%20tanya%20tentang%20${content.title || ""}`}
         target="_blank"
       >
-        <i class="bi bi-whatsapp"></i> Chat
+        <BsWhatsapp /> Chat
       </a>
     </div>
   </section>

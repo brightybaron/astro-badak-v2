@@ -1,0 +1,187 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+---
+
+<MainLayout title="Create">
+  <form
+    id="createPostForm"
+    class="max-w-3xl mx-auto p-6 bg-white rounded-md shadow-md"
+    enctype="multipart/form-data"
+  >
+    <h2 class="text-2xl font-bold mb-4">Create New Post</h2>
+
+    <!-- Title -->
+
+    <div class="mb-4">
+      <label class="block font-medium text-gray-700" for="title">Title</label>
+
+      <input
+        type="text"
+        id="title"
+        name="title"
+        class="mt-1 block w-full py-1 px-2 text-sm border border-gray-300 rounded-md"
+        placeholder="Post title"
+        required
+      />
+    </div>
+
+    <!-- Jenis Trip -->
+
+    <div class="mb-4">
+      <label class="block font-medium text-gray-700" for="jenistrip"
+        >Jenis Trip</label
+      >
+
+      <select
+        id="jenistrip"
+        name="jenistrip"
+        class="mt-1 block w-full py-1 px-2 text-sm border border-gray-300 rounded-md"
+        required
+      >
+        <option value="">-</option>
+
+        <option value="Private Trip">Private Trip</option>
+
+        <option value="Open Trip">Open Trip</option>
+      </select>
+    </div>
+
+    <!-- Meeting Point -->
+
+    <div class="mb-4">
+      <label class="block font-medium text-gray-700" for="mepo"
+        >Meeting Point</label
+      >
+
+      <input
+        type="text"
+        id="mepo"
+        name="mepo"
+        class="mt-1 block w-full py-1 px-2 text-sm border border-gray-300 rounded-md"
+        placeholder="Meeting point"
+        required
+      />
+    </div>
+
+    <!-- Destinasi -->
+
+    <div class="mb-4">
+      <label class="block font-medium text-gray-700" for="destinasi"
+        >Destinasi</label
+      >
+
+      <textarea
+        id="destinasi"
+        name="destinasi"
+        rows="3"
+        class="mt-1 block w-full py-1 px-2 text-sm border border-gray-300 rounded-md"
+        placeholder="Destinations (comma separated)"
+        required></textarea>
+    </div>
+
+    <!-- Photos -->
+
+    <div class="mb-4">
+      <label for="photos" class="block font-medium leading-6 text-gray-900"
+        >Photos</label
+      >
+
+      <input
+        id="photos"
+        name="photos"
+        type="file"
+        multiple
+        accept="image/*"
+        required
+      />
+
+      <div id="selected-images" class="mt-2"></div>
+    </div>
+
+    <!-- Submit Button -->
+
+    <div class="mt-6">
+      <button
+        type="submit"
+        id="submitBtn"
+        class="mt-4 px-4 py-2 w-full bg-indigo-600 text-white rounded-md"
+        >Submit</button
+      >
+    </div>
+  </form>
+</MainLayout>
+
+<script>
+  // script.js
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("createPostForm") as HTMLFormElement;
+    const photosInput = document.getElementById("photos");
+    const selectedImagesContainer = document.getElementById("selected-images");
+    const submitBtn = document.getElementById("submitBtn");
+    let selectedImages = [];
+
+    photosInput.addEventListener("change", handleFileChange);
+    form.addEventListener("submit", handleSubmit);
+
+    function handleFileChange(event) {
+      const files = Array.from(event.target.files);
+      const validFiles = files.filter(
+        (file: File) => file.size <= 10 * 1024 * 1024
+      ); // 10MB max
+
+      if (validFiles.length + selectedImages.length > 6) {
+        alert("You can only upload up to 6 images");
+        return;
+      }
+
+      const newImages = validFiles.slice(0, 6 - selectedImages.length);
+      selectedImages = [...selectedImages, ...newImages];
+      renderSelectedImages();
+    }
+
+    function renderSelectedImages() {
+      selectedImagesContainer.innerHTML = "";
+      selectedImages.forEach((file, index) => {
+        const imgDiv = document.createElement("div");
+        imgDiv.className = "relative m-2";
+        // imgDiv.innerHTML ```javascript
+        imgDiv.innerHTML = `
+                <img src="${URL.createObjectURL(file)}" alt="${file.name}" class="h-auto w-48 object-cover" />
+                <button type="button" class="remove-image-btn absolute top-2 right-2 bg-red-600 text-white rounded-full p-1" onclick="removeImage(${index})" aria-label="Remove Image">X</button>
+            `;
+        selectedImagesContainer.appendChild(imgDiv);
+      });
+    }
+
+    globalThis.removeImage = function (index) {
+      selectedImages.splice(index, 1);
+      renderSelectedImages();
+    };
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+      const formData = new FormData(form);
+
+      selectedImages.forEach((image, index) => {
+        formData.append(`photos[${index}]`, image);
+      });
+
+      try {
+        const response = await fetch("/api/create-post", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          alert("Post created successfully!");
+          window.location.href = "/dashboard";
+        } else {
+          const errorData = await response.json();
+          console.error("Error submitting form", errorData);
+        }
+      } catch (error) {
+        console.error("Error submitting form", error);
+      }
+    }
+  });
+</script>

@@ -8,11 +8,7 @@ export const getContent = async () => {
         createdAt: "asc",
       },
       include: {
-        images: {
-          orderBy: {
-            url: "asc",
-          }
-        }, // Include related images if you have a relation defined
+        images: true, // Include related images if you have a relation defined
       },
     });
     return result;
@@ -30,11 +26,7 @@ export const getContentBySlug = async (slug: string) => {
         slug: slug,
       },
       include: {
-        images: {
-          orderBy: {
-            url: "asc",
-          }
-        }, // Include related images if you have a relation defined
+        images: true, // Include related images if you have a relation defined
       },
     });
     return result;
